@@ -1,8 +1,7 @@
 import datetime
 from app.models import demande, creneau
-from app.services import file_service, token_service
+from app.services import file_service, token_service, conflict_service
 from flask import current_app
-
 
 def creer_demande(form_data, fichier):
     nom = form_data.get("nom")
@@ -28,42 +27,44 @@ def creer_demande(form_data, fichier):
         return None, error
 
     token = token_service.generer_token()
-
     demande_id = demande.create(
         token, nom, email, telephone, motif, message, nom_fichier, creneau_id
     )
-
     return {"id": demande_id, "token": token}, None
-
 
 def lister_demandes():
     rows = demande.find_all()
-    return [dict(row) for row in rows]
+    demandes = []
+    for row in rows:
+        d = dict(row)
+        creneau_row = creneau.find_by_id(d["creneau_id"])
+        d["date_creneau"] = creneau_row["date_heure"].split(" ")[0] if creneau_row else None
+        demandes.append(d)
 
+    conflits = conflict_service.calculer_conflits(demandes)
+    for d in demandes:
+        d["conflits"] = conflits.get(d["id"], 0)
+
+    return demandes
 
 def obtenir_detail(demande_id):
     row = demande.find_by_id(demande_id)
     if row is None:
         return None
-
     if row["statut"] == "En attente de traitement":
         demande.update_statut(demande_id, "En cours d'examen")
         row = demande.find_by_id(demande_id)
-
     return dict(row)
-
 
 def traiter_demande(demande_id, decision, commentaire):
     row = demande.find_by_id(demande_id)
     if row is None:
         return None, "Demande introuvable"
-
     if decision not in ("Acceptee", "Refusee"):
         return None, "Decision invalide (Acceptee ou Refusee attendu)"
 
     statut = "Acceptée" if decision == "Acceptee" else "Refusée"
     date_traitement = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     demande.update_statut(demande_id, statut, commentaire, date_traitement)
 
     if statut == "Acceptée":
