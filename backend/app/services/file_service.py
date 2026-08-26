@@ -1,13 +1,12 @@
 import os
 import uuid
-import magic
+import filetype
 from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {"pdf", "zip"}
 ALLOWED_MIME_TYPES = {
     "application/pdf",
     "application/zip",
-    "application/x-zip-compressed",
 }
 MAX_SIZE_BYTES = 5 * 1024 * 1024  # 5 Mo
 
@@ -33,11 +32,14 @@ def valider_et_sauvegarder(fichier, upload_folder):
     if taille > MAX_SIZE_BYTES:
         return None, "Fichier trop volumineux (5 Mo maximum)"
 
-    mime_type = magic.from_buffer(fichier.read(2048), mime=True)
+    entete = fichier.read(261)
     fichier.seek(0)
 
-    if mime_type not in ALLOWED_MIME_TYPES:
-        return None, f"Type de fichier non autorise (detecte: {mime_type})"
+    kind = filetype.guess(entete)
+
+    if kind is None or kind.mime not in ALLOWED_MIME_TYPES:
+        detecte = kind.mime if kind else "inconnu"
+        return None, f"Type de fichier non autorise (detecte: {detecte})"
 
     nom_securise = secure_filename(fichier.filename)
     nom_unique = f"{uuid.uuid4().hex}_{nom_securise}"
