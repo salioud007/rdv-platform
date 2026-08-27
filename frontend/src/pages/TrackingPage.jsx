@@ -27,8 +27,8 @@ export default function TrackingPage() {
 
   const conteneurClasses = [
     'min-h-screen',
-    'bg-[#F7F5F0]',
-    'text-[#1C1A17]',
+    'bg-surface',
+    'text-ink',
     'px-4',
     'py-12',
     'flex',
@@ -40,7 +40,7 @@ export default function TrackingPage() {
     'max-w-lg',
     'w-full',
     'border',
-    'border-[#D6D2C4]',
+    'border-border',
     'rounded-sm',
     'p-6',
     'bg-white',
@@ -57,7 +57,7 @@ export default function TrackingPage() {
   if (erreur) {
     return (
       <div className={conteneurClasses}>
-        <p className="text-sm text-[#991B1B]">{erreur}</p>
+        <p className="text-sm text-danger">{erreur}</p>
       </div>
     )
   }
@@ -75,16 +75,16 @@ export default function TrackingPage() {
 
         <dl className="text-sm space-y-2 mb-4">
           <div>
-            <dt className="text-[#6b6375]">Motif</dt>
+            <dt className="text-ink-muted">Motif</dt>
             <dd>{demande.motif}</dd>
           </div>
           <div>
-            <dt className="text-[#6b6375]">Soumise le</dt>
+            <dt className="text-ink-muted">Soumise le</dt>
             <dd>{formatDateTime(demande.date_soumission)}</dd>
           </div>
           {demande.commentaire_admin && (
             <div>
-              <dt className="text-[#6b6375]">Commentaire</dt>
+              <dt className="text-ink-muted">Commentaire</dt>
               <dd>{demande.commentaire_admin}</dd>
             </div>
           )}

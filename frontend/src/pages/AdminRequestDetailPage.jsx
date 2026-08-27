@@ -62,8 +62,8 @@ export default function AdminRequestDetailPage() {
 
   const conteneurClasses = [
     'min-h-screen',
-    'bg-[#F7F5F0]',
-    'text-[#1C1A17]',
+    'bg-surface',
+    'text-ink',
     'px-4',
     'py-8',
   ].join(' ')
@@ -72,7 +72,7 @@ export default function AdminRequestDetailPage() {
     'max-w-2xl',
     'mx-auto',
     'border',
-    'border-[#D6D2C4]',
+    'border-border',
     'rounded-sm',
     'p-6',
     'bg-white',
@@ -89,7 +89,7 @@ export default function AdminRequestDetailPage() {
   if (!demande) {
     return (
       <div className={conteneurClasses}>
-        <p className="text-sm text-[#991B1B]">Demande introuvable.</p>
+        <p className="text-sm text-danger">Demande introuvable.</p>
       </div>
     )
   }
@@ -119,23 +119,23 @@ export default function AdminRequestDetailPage() {
 
         <dl className="text-sm space-y-2 mb-6">
           <div>
-            <dt className="text-[#6b6375]">Email</dt>
+            <dt className="text-ink-muted">Email</dt>
             <dd>{demande.email}</dd>
           </div>
           <div>
-            <dt className="text-[#6b6375]">Telephone</dt>
+            <dt className="text-ink-muted">Telephone</dt>
             <dd>{demande.telephone || 'Non fourni'}</dd>
           </div>
           <div>
-            <dt className="text-[#6b6375]">Motif</dt>
+            <dt className="text-ink-muted">Motif</dt>
             <dd>{demande.motif}</dd>
           </div>
           <div>
-            <dt className="text-[#6b6375]">Message</dt>
+            <dt className="text-ink-muted">Message</dt>
             <dd>{demande.message || 'Aucun message'}</dd>
           </div>
           <div>
-            <dt className="text-[#6b6375]">Soumise le</dt>
+            <dt className="text-ink-muted">Soumise le</dt>
             <dd>{formatDateTime(demande.date_soumission)}</dd>
           </div>
         </dl>
@@ -145,11 +145,11 @@ export default function AdminRequestDetailPage() {
         </Button>
 
         {erreur && (
-          <p className="text-sm text-[#991B1B] mt-4">{erreur}</p>
+          <p className="text-sm text-danger mt-4">{erreur}</p>
         )}
 
         {!dejaTraitee && (
-          <div className="mt-6 pt-6 border-t border-[#D6D2C4]">
+          <div className="mt-6 pt-6 border-t border-border">
             <label
               htmlFor="commentaire"
               className="text-sm font-medium block mb-2"
@@ -163,7 +163,7 @@ export default function AdminRequestDetailPage() {
                 setCommentaire(e.target.value)
               }}
               rows={3}
-              className="w-full border border-[#D6D2C4] rounded-sm px-3 py-2 text-sm mb-4"
+              className="w-full border border-border rounded-sm px-3 py-2 text-sm mb-4"
             />
             <div className="flex gap-3">
               <Button
@@ -189,8 +189,8 @@ export default function AdminRequestDetailPage() {
         )}
 
         {dejaTraitee && demande.commentaire_admin && (
-          <div className="mt-6 pt-6 border-t border-[#D6D2C4]">
-            <p className="text-sm text-[#6b6375] mb-1">
+          <div className="mt-6 pt-6 border-t border-border">
+            <p className="text-sm text-ink-muted mb-1">
               Commentaire laisse
             </p>
             <p className="text-sm">{demande.commentaire_admin}</p>

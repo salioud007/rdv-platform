@@ -28,8 +28,8 @@ export default function AdminLoginPage() {
 
   const conteneurClasses = [
     'min-h-screen',
-    'bg-[#F7F5F0]',
-    'text-[#1C1A17]',
+    'bg-surface',
+    'text-ink',
     'flex',
     'items-center',
     'justify-center',
@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
     'max-w-sm',
     'w-full',
     'border',
-    'border-[#D6D2C4]',
+    'border-border',
     'rounded-sm',
     'p-6',
     'bg-white',
@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
           />
 
           {erreur && (
-            <p className="text-sm text-[#991B1B]">{erreur}</p>
+            <p className="text-sm text-danger">{erreur}</p>
           )}
 
           <Button type="submit" disabled={chargement}>

@@ -48,15 +48,15 @@ export default function AdminSlotsPage() {
 
   const conteneurClasses = [
     'min-h-screen',
-    'bg-[#F7F5F0]',
-    'text-[#1C1A17]',
+    'bg-surface',
+    'text-ink',
     'px-4',
     'py-8',
   ].join(' ')
 
   const formeClasses = [
     'border',
-    'border-[#D6D2C4]',
+    'border-border',
     'rounded-sm',
     'p-4',
     'bg-white',
@@ -108,13 +108,13 @@ export default function AdminSlotsPage() {
         </form>
 
         {erreur && (
-          <p className="text-sm text-[#991B1B] mb-4">{erreur}</p>
+          <p className="text-sm text-danger mb-4">{erreur}</p>
         )}
 
         {chargement ? (
           <Loader label="Chargement des creneaux..." />
         ) : (
-          <div className="border border-[#D6D2C4] rounded-sm bg-white overflow-hidden">
+          <div className="border border-border rounded-sm bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-[#EFEBE1] text-left">
                 <tr>
@@ -126,7 +126,7 @@ export default function AdminSlotsPage() {
               <tbody>
                 {creneaux.map(function (creneau) {
                   return (
-                    <tr key={creneau.id} className="border-t border-[#D6D2C4]">
+                    <tr key={creneau.id} className="border-t border-border">
                       <td className="px-3 py-2">
                         {formatDateTime(creneau.date_heure)}
                       </td>
@@ -135,9 +135,9 @@ export default function AdminSlotsPage() {
                       </td>
                       <td className="px-3 py-2">
                         {creneau.disponible ? (
-                          <span className="text-[#166534] text-xs">Disponible</span>
+                          <span className="text-success text-xs">Disponible</span>
                         ) : (
-                          <span className="text-[#6b6375] text-xs">Pris</span>
+                          <span className="text-ink-muted text-xs">Pris</span>
                         )}
                       </td>
                     </tr>

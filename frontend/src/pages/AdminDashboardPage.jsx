@@ -57,15 +57,15 @@ export default function AdminDashboardPage() {
 
   const conteneurClasses = [
     'min-h-screen',
-    'bg-[#F7F5F0]',
-    'text-[#1C1A17]',
+    'bg-surface',
+    'text-ink',
     'px-4',
     'py-8',
   ].join(' ')
 
   const statCarteClasses = [
     'border',
-    'border-[#D6D2C4]',
+    'border-border',
     'rounded-sm',
     'p-4',
     'bg-white',
@@ -97,15 +97,15 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className={statCarteClasses}>
             <p className="text-2xl font-mono">{enAttente}</p>
-            <p className="text-xs text-[#6b6375]">En attente</p>
+            <p className="text-xs text-ink-muted">En attente</p>
           </div>
           <div className={statCarteClasses}>
             <p className="text-2xl font-mono">{traitees}</p>
-            <p className="text-xs text-[#6b6375]">Traitees ce mois</p>
+            <p className="text-xs text-ink-muted">Traitees ce mois</p>
           </div>
           <div className={statCarteClasses}>
             <p className="text-2xl font-mono">{tauxAcceptation}%</p>
-            <p className="text-xs text-[#6b6375]">Taux d acceptation</p>
+            <p className="text-xs text-ink-muted">Taux d acceptation</p>
           </div>
         </div>
 
@@ -119,8 +119,8 @@ export default function AdminDashboardPage() {
                 }}
                 className={
                   filtre === statut
-                    ? 'text-xs px-3 py-1 rounded-full bg-[#1C1A17] text-white'
-                    : 'text-xs px-3 py-1 rounded-full border border-[#D6D2C4]'
+                    ? 'text-xs px-3 py-1 rounded-full bg-ink text-white'
+                    : 'text-xs px-3 py-1 rounded-full border border-border'
                 }
               >
                 {statut === 'toutes' ? 'Toutes' : statut}
@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
         {chargement ? (
           <Loader label="Chargement des demandes..." />
         ) : (
-          <div className="border border-[#D6D2C4] rounded-sm bg-white overflow-hidden">
+          <div className="border border-border rounded-sm bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-[#EFEBE1] text-left">
                 <tr>
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
                   return (
                     <tr
                       key={demande.id}
-                      className="border-t border-[#D6D2C4] cursor-pointer hover:bg-[#F7F5F0]"
+                      className="border-t border-border cursor-pointer hover:bg-surface"
                       onClick={function () {
                         navigate('/admin/demandes/' + demande.id)
                       }}
@@ -157,7 +157,7 @@ export default function AdminDashboardPage() {
                       <td className="px-3 py-2">
                         {formatDateTime(demande.date_heure_creneau)}
                         {demande.conflits > 0 && (
-                          <span className="ml-2 text-xs text-[#B45309]">
+                          <span className="ml-2 text-xs text-accent">
                             {'\u26A0 ' + demande.conflits + ' autre(s) ce jour'}
                           </span>
                         )}
@@ -166,7 +166,7 @@ export default function AdminDashboardPage() {
                       <td className="px-3 py-2">
                         <Badge statut={demande.statut} />
                       </td>
-                      <td className="px-3 py-2 text-[#6b6375]">
+                      <td className="px-3 py-2 text-ink-muted">
                         {'>'}
                       </td>
                     </tr>

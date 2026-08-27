@@ -94,7 +94,7 @@ export default function RequestForm({ onSuccess }) {
   const labelClasses = [
     'text-sm',
     'font-medium',
-    'text-[#1C1A17]',
+    'text-ink',
   ].join(' ')
 
   return (
@@ -158,12 +158,12 @@ export default function RequestForm({ onSuccess }) {
             setMessage(e.target.value)
           }}
           rows={3}
-          className="border border-[#D6D2C4] rounded-sm px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#B45309]"
+          className="border border-border rounded-sm px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent"
         />
       </div>
 
       {erreurServeur && (
-        <p className="text-sm text-[#991B1B] border border-[#991B1B] rounded-sm px-3 py-2">
+        <p className="text-sm text-danger border border-danger rounded-sm px-3 py-2">
           {erreurServeur}
         </p>
       )}
