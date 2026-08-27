@@ -17,13 +17,16 @@ def creer_demande(form_data, fichier):
     creneau_row = creneau.find_by_id(creneau_id)
     if creneau_row is None:
         return None, "Creneau introuvable"
-    if not creneau_row["disponible"]:
-        return None, "Ce creneau n'est plus disponible"
+
+    reservation_reussie = creneau.reserver_si_disponible(creneau_id)
+    if not reservation_reussie:
+        return None, "Ce creneau vient d'etre pris par quelqu'un d'autre"
 
     nom_fichier, error = file_service.valider_et_sauvegarder(
         fichier, current_app.config["UPLOAD_FOLDER"]
     )
     if error:
+        creneau.liberer(creneau_id)
         return None, error
 
     token = token_service.generer_token()
@@ -68,7 +71,7 @@ def traiter_demande(demande_id, decision, commentaire):
     date_traitement = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     demande.update_statut(demande_id, statut, commentaire, date_traitement)
 
-    if statut == "Acceptée":
-        creneau.marquer_indisponible(row["creneau_id"])
+    if statut == "Refusée":
+        creneau.liberer(row["creneau_id"])
 
     return dict(demande.find_by_id(demande_id)), None

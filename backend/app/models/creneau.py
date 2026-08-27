@@ -33,3 +33,19 @@ def marquer_indisponible(creneau_id):
         "UPDATE creneaux SET disponible = 0 WHERE id = ?", (creneau_id,)
     )
     db.commit()
+
+def reserver_si_disponible(creneau_id):
+    db = get_db()
+    cursor = db.execute(
+        "UPDATE creneaux SET disponible = 0 WHERE id = ? AND disponible = 1",
+        (creneau_id,),
+    )
+    db.commit()
+    return cursor.rowcount == 1
+
+def liberer(creneau_id):
+    db = get_db()
+    db.execute(
+        "UPDATE creneaux SET disponible = 1 WHERE id = ?", (creneau_id,)
+    )
+    db.commit()
