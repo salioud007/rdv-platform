@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="border border-border rounded-sm bg-white overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#EFEBE1] text-left">
+              <thead className="bg-table-header text-left">
                 <tr>
                   <th className="px-3 py-2">Nom</th>
                   <th className="px-3 py-2">Date souhaitee</th>
