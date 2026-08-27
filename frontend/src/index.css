@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+@theme {
+  --color-surface: #F7F5F0;
+  --color-surface-alt: #FFFFFF;
+  --color-ink: #1C1A17;
+  --color-ink-muted: #6B6375;
+  --color-border: #D6D2C4;
+  --color-accent: #B45309;
+  --color-accent-hover: #92400E;
+  --color-danger: #991B1B;
+  --color-danger-bg: #FEF2F2;
+  --color-success: #166534;
+
+  --font-serif: "Georgia", "Times New Roman", serif;
+  --radius-field: 0.25rem;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+}
