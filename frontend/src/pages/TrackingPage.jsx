@@ -25,75 +25,52 @@ export default function TrackingPage() {
       })
   }, [token])
 
-  const conteneurClasses = [
-    'min-h-screen',
-    'bg-surface',
-    'text-ink',
-    'px-4',
-    'py-12',
-    'flex',
-    'flex-col',
-    'items-center',
-  ].join(' ')
-
-  const carteClasses = [
-    'max-w-lg',
-    'w-full',
-    'border',
-    'border-border',
-    'rounded-sm',
-    'p-6',
-    'bg-white',
-  ].join(' ')
-
   if (chargement) {
     return (
-      <div className={conteneurClasses}>
-        <Loader label="Verification du lien de suivi..." />
+      <div className="min-h-screen bg-surface text-ink px-4 py-16 flex flex-col items-center justify-center">
+        <Loader label="Vérification du lien de suivi..." />
       </div>
     )
   }
 
   if (erreur) {
     return (
-      <div className={conteneurClasses}>
-        <p className="text-sm text-danger">{erreur}</p>
+      <div className="min-h-screen bg-surface text-ink px-4 py-16 flex flex-col items-center justify-center">
+        <div className="max-w-md w-full bg-surface-alt rounded-2xl shadow-card border border-border p-8 text-center">
+          <p className="text-sm text-danger">{erreur}</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className={conteneurClasses}>
-      <div className={carteClasses}>
-        <h1 className="font-serif text-2xl mb-4">
-          Suivi de votre demande
+    <div className="min-h-screen bg-surface text-ink px-4 py-16 flex flex-col items-center justify-center">
+      <div className="max-w-md w-full bg-surface-alt rounded-2xl shadow-card border border-border p-8">
+        <span className="eyebrow mb-3">Suivi de demande</span>
+        <h1 className="font-display text-2xl font-semibold tracking-tight mt-3 mb-4">
+          {demande.motif}
         </h1>
+        <Badge statut={demande.statut} />
 
-        <div className="mb-4">
-          <Badge statut={demande.statut} />
-        </div>
-
-        <dl className="text-sm space-y-2 mb-4">
-          <div>
-            <dt className="text-ink-muted">Motif</dt>
-            <dd>{demande.motif}</dd>
-          </div>
-          <div>
+        <dl className="text-sm space-y-3 mt-6 mb-2">
+          <div className="flex justify-between border-b border-border pb-2">
             <dt className="text-ink-muted">Soumise le</dt>
-            <dd>{formatDateTime(demande.date_soumission)}</dd>
+            <dd className="font-mono text-xs">{formatDateTime(demande.date_soumission)}</dd>
           </div>
           {demande.commentaire_admin && (
-            <div>
-              <dt className="text-ink-muted">Commentaire</dt>
-              <dd>{demande.commentaire_admin}</dd>
+            <div className="pt-1">
+              <dt className="text-ink-muted mb-1">Commentaire de l'administrateur</dt>
+              <dd className="bg-surface border border-border rounded-lg px-3 py-2 leading-relaxed">
+                {demande.commentaire_admin}
+              </dd>
             </div>
           )}
         </dl>
 
         {demande.statut === 'Acceptée' && (
-          <a href={urlTelechargerIcs(token)}>
+          <a href={urlTelechargerIcs(token)} className="block mt-6">
             <Button variant="success">
-              Telecharger le fichier .ics
+              Télécharger le fichier .ics
             </Button>
           </a>
         )}

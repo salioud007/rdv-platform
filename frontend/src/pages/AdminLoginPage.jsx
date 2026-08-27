@@ -26,33 +26,13 @@ export default function AdminLoginPage() {
     }
   }
 
-  const conteneurClasses = [
-    'min-h-screen',
-    'bg-surface',
-    'text-ink',
-    'flex',
-    'items-center',
-    'justify-center',
-    'px-4',
-  ].join(' ')
-
-  const carteClasses = [
-    'max-w-sm',
-    'w-full',
-    'border',
-    'border-border',
-    'rounded-sm',
-    'p-6',
-    'bg-white',
-  ].join(' ')
-
   return (
-    <div className={conteneurClasses}>
-      <form onSubmit={handleSubmit} className={carteClasses}>
-        <h1 className="font-serif text-2xl mb-6 text-center">
+    <div className="min-h-screen bg-surface text-ink flex items-center justify-center px-4">
+      <form onSubmit={handleSubmit} className="max-w-sm w-full bg-surface-alt rounded-2xl shadow-card border border-border p-8">
+        <span className="eyebrow mb-3">Accès sécurisé</span>
+        <h1 className="font-display text-2xl font-semibold tracking-tight mt-3 mb-6">
           Espace administrateur
         </h1>
-
         <div className="flex flex-col gap-4">
           <Input
             id="email"
@@ -72,11 +52,9 @@ export default function AdminLoginPage() {
               setPassword(e.target.value)
             }}
           />
-
           {erreur && (
             <p className="text-sm text-danger">{erreur}</p>
           )}
-
           <Button type="submit" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}
           </Button>

@@ -42,48 +42,26 @@ export default function AdminSlotsPage() {
       setDateHeure('')
       chargerCreneaux()
     } catch (err) {
-      setErreur('Erreur lors de la creation du creneau.')
+      setErreur('Erreur lors de la création du créneau.')
     }
   }
 
-  const conteneurClasses = [
-    'min-h-screen',
-    'bg-surface',
-    'text-ink',
-    'px-4',
-    'py-8',
-  ].join(' ')
-
-  const formeClasses = [
-    'border',
-    'border-border',
-    'rounded-sm',
-    'p-4',
-    'bg-white',
-    'mb-6',
-    'flex',
-    'gap-3',
-    'items-end',
-  ].join(' ')
-
   return (
-    <div className={conteneurClasses}>
+    <div className="min-h-screen bg-surface text-ink px-4 py-10">
       <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="font-serif text-2xl">
-            Gestion des creneaux
-          </h1>
-          <Button
-            variant="secondary"
-            onClick={function () {
-              navigate('/admin')
-            }}
-          >
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <span className="eyebrow mb-3">Disponibilités</span>
+            <h1 className="font-display text-3xl font-semibold tracking-tight mt-3">
+              Gestion des créneaux
+            </h1>
+          </div>
+          <Button variant="secondary" onClick={function () { navigate('/admin') }}>
             Retour au tableau de bord
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className={formeClasses}>
+        <form onSubmit={handleSubmit} className="bg-surface-alt rounded-2xl shadow-card border border-border p-6 mb-6 flex gap-3 items-end">
           <Input
             id="dateHeure"
             label="Date et heure"
@@ -95,7 +73,7 @@ export default function AdminSlotsPage() {
           />
           <Input
             id="duree"
-            label="Duree (minutes)"
+            label="Durée (minutes)"
             type="number"
             value={dureeMinutes}
             onChange={function (e) {
@@ -112,32 +90,44 @@ export default function AdminSlotsPage() {
         )}
 
         {chargement ? (
-          <Loader label="Chargement des creneaux..." />
+          <div className="bg-surface-alt rounded-2xl border border-border p-8 flex justify-center">
+            <Loader label="Chargement des créneaux..." />
+          </div>
+        ) : creneaux.length === 0 ? (
+          <div className="bg-surface-alt rounded-2xl border border-border p-12 text-center">
+            <p className="text-sm text-ink-muted">Aucun créneau créé pour le moment.</p>
+          </div>
         ) : (
-          <div className="border border-border rounded-sm bg-white overflow-hidden">
+          <div className="rounded-2xl shadow-card border border-border bg-surface-alt overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-table-header text-left">
                 <tr>
-                  <th className="px-3 py-2">Date</th>
-                  <th className="px-3 py-2">Duree</th>
-                  <th className="px-3 py-2">Statut</th>
+                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Date</th>
+                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Durée</th>
+                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</th>
                 </tr>
               </thead>
               <tbody>
                 {creneaux.map(function (creneau) {
                   return (
                     <tr key={creneau.id} className="border-t border-border">
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3 font-mono text-xs">
                         {formatDateTime(creneau.date_heure)}
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3 text-ink-muted">
                         {creneau.duree_minutes} min
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-4 py-3">
                         {creneau.disponible ? (
-                          <span className="text-success text-xs">Disponible</span>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wide bg-success/10 text-success rounded-full px-3 py-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            Disponible
+                          </span>
                         ) : (
-                          <span className="text-ink-muted text-xs">Pris</span>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wide bg-secondary-hover text-ink-muted rounded-full px-3 py-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            Pris
+                          </span>
                         )}
                       </td>
                     </tr>
