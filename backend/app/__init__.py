@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from app.config import Config
 from app.database.connection import init_db, close_db
@@ -23,5 +23,17 @@ def create_app():
     app.register_blueprint(creneau_bp, url_prefix="/api/creneaux")
     app.register_blueprint(demande_bp, url_prefix="/api/demandes")
     app.register_blueprint(tracking_bp, url_prefix="/api/tracking")
+
+    @app.errorhandler(413)
+    def fichier_trop_lourd(e):
+        return jsonify({
+            "error": "Fichier trop volumineux (5 Mo maximum)"
+        }), 413
+
+    @app.errorhandler(429)
+    def trop_de_requetes(e):
+        return jsonify({
+            "error": "Trop de requetes. Veuillez reessayer plus tard."
+        }), 429
 
     return app
