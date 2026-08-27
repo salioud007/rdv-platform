@@ -39,6 +39,7 @@ def lister_demandes():
         d = dict(row)
         creneau_row = creneau.find_by_id(d["creneau_id"])
         d["date_creneau"] = creneau_row["date_heure"].split(" ")[0] if creneau_row else None
+        d["date_heure_creneau"] = creneau_row["date_heure"] if creneau_row else None
         demandes.append(d)
 
     conflits = conflict_service.calculer_conflits(demandes)
