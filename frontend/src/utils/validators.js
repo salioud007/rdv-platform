@@ -1,13 +1,17 @@
-export const ALLOWED_EXTENSIONS = ['pdf', 'zip']
+export const EXTENSIONS_DANGEREUSES = [
+  'exe', 'bat', 'sh', 'cmd', 'msi', 'php',
+  'js', 'jar', 'com', 'scr', 'vbs', 'ps1',
+]
+
 export const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 
 export function validerFichier(fichier) {
   if (!fichier) {
-    return "Un fichier est obligatoire (pdf ou zip)."
+    return "Un fichier est obligatoire."
   }
   const extension = fichier.name.split('.').pop().toLowerCase()
-  if (!ALLOWED_EXTENSIONS.includes(extension)) {
-    return "Extension non autorisée (pdf ou zip uniquement)."
+  if (EXTENSIONS_DANGEREUSES.includes(extension)) {
+    return "Ce type de fichier n'est pas autorise pour des raisons de securite."
   }
   if (fichier.size > MAX_FILE_SIZE_BYTES) {
     return "Fichier trop volumineux (5 Mo maximum)."
