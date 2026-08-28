@@ -6,3 +6,7 @@ venv/
 dist/
 backend/uploads/*
 !backend/uploads/.gitkeep
+backend/test.*
+backend/*_recupere.*
+backend/gros_fichier.*
+backend/rdv.ics
