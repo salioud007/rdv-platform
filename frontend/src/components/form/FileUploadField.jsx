@@ -1,17 +1,30 @@
+import { Dropzone } from '@mantine/dropzone'
+import { Text, Group } from '@mantine/core'
+
 export default function FileUploadField({ fichier, onChange, error }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor="fichier" className="text-sm font-medium text-ink">
+      <label className="text-sm font-medium text-ink">
         Piece jointe (5 Mo max)
       </label>
-      <input
-        id="fichier"
-        type="file"
-        onChange={(e) => onChange(e.target.files[0] || null)}
-        className={`border rounded-lg px-3.5 py-2.5 text-sm bg-white transition-shadow duration-150 file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border-0 file:bg-ink file:text-white file:text-xs file:font-medium ${
-          error ? 'border-danger' : 'border-border'
-        }`}
-      />
+      <Dropzone
+        onDrop={(files) => onChange(files[0] || null)}
+        maxFiles={1}
+        multiple={false}
+        styles={{
+          root: {
+            borderColor: error ? 'var(--color-danger)' : 'var(--color-border)',
+            backgroundColor: 'white',
+            borderRadius: 'var(--radius-lg)',
+          },
+        }}
+      >
+        <Group justify="center" gap="xs" style={{ minHeight: 80, pointerEvents: 'none' }}>
+          <Text size="sm" c="dimmed">
+            Glissez un fichier ici ou cliquez pour selectionner
+          </Text>
+        </Group>
+      </Dropzone>
       {fichier && (
         <span className="text-xs text-ink-muted font-mono">
           {fichier.name}
