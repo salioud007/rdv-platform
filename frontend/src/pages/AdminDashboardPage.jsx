@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Paper, SegmentedControl, Table } from '@mantine/core'
 import Badge from '../components/common/Badge'
 import Loader from '../components/common/Loader'
 import Button from '../components/common/Button'
@@ -7,7 +8,18 @@ import { useAuth } from '../hooks/useAuth'
 import { listerDemandes } from '../services/requestService'
 import { formatDateTime } from '../utils/formatDate'
 
-const FILTRES = ['toutes', 'En attente de traitement', "En cours d'examen", 'Acceptée', 'Refusée']
+const FILTRES = [
+  { value: 'toutes', label: 'Toutes' },
+  { value: 'En attente de traitement', label: 'En attente' },
+  { value: "En cours d'examen", label: 'En cours' },
+  { value: 'Acceptée', label: 'Acceptée' },
+  { value: 'Refusée', label: 'Refusée' },
+]
+
+const cardStyle = {
+  backgroundColor: 'var(--color-surface-alt)',
+  borderColor: 'var(--color-border)',
+}
 
 export default function AdminDashboardPage() {
   const { logout } = useAuth()
@@ -78,93 +90,103 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-surface-alt rounded-2xl border border-border p-5">
+          <Paper radius="xl" withBorder style={cardStyle} p="lg">
             <p className="text-3xl font-mono font-medium text-signal">{enAttente}</p>
             <p className="text-xs text-ink-muted mt-1">En attente</p>
-          </div>
-          <div className="bg-surface-alt rounded-2xl border border-border p-5">
+          </Paper>
+          <Paper radius="xl" withBorder style={cardStyle} p="lg">
             <p className="text-3xl font-mono font-medium text-ink">{traitees}</p>
             <p className="text-xs text-ink-muted mt-1">Traitées ce mois</p>
-          </div>
-          <div className="bg-surface-alt rounded-2xl border border-border p-5">
+          </Paper>
+          <Paper radius="xl" withBorder style={cardStyle} p="lg">
             <p className="text-3xl font-mono font-medium text-success">{tauxAcceptation}%</p>
             <p className="text-xs text-ink-muted mt-1">Taux d'acceptation</p>
-          </div>
+          </Paper>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {FILTRES.map(function (statut) {
-            const actif = filtre === statut
-            return (
-              <button
-                key={statut}
-                onClick={function () { setFiltre(statut) }}
-                className={
-                  actif
-                    ? 'text-xs font-medium px-3.5 py-1.5 rounded-full bg-ink text-white transition-colors'
-                    : 'text-xs font-medium px-3.5 py-1.5 rounded-full border border-border text-ink-muted hover:bg-secondary-hover transition-colors'
-                }
-              >
-                {statut === 'toutes' ? 'Toutes' : statut}
-              </button>
-            )
-          })}
-        </div>
+        <SegmentedControl
+          value={filtre}
+          onChange={setFiltre}
+          data={FILTRES}
+          radius="xl"
+          className="mb-4"
+          styles={{
+            root: {
+              backgroundColor: 'var(--color-surface-alt)',
+              border: '1px solid var(--color-border)',
+            },
+            indicator: {
+              backgroundColor: 'var(--color-ink)',
+            },
+            label: {
+              fontSize: '0.75rem',
+              fontWeight: 500,
+            },
+          }}
+        />
 
         {chargement ? (
-          <div className="bg-surface-alt rounded-2xl border border-border p-8 flex justify-center">
+          <Paper radius="xl" withBorder style={cardStyle} p="xl" className="flex justify-center">
             <Loader label="Chargement des demandes..." />
-          </div>
+          </Paper>
         ) : demandesFiltrees.length === 0 ? (
-          <div className="bg-surface-alt rounded-2xl border border-border p-12 text-center">
+          <Paper radius="xl" withBorder style={cardStyle} p="xl" className="text-center">
             <p className="text-sm text-ink-muted">Aucune demande pour ce filtre.</p>
-          </div>
+          </Paper>
         ) : (
-          <div className="rounded-2xl shadow-card border border-border bg-surface-alt overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-table-header text-left">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Nom</th>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Date souhaitée</th>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Motif</th>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
+          <Paper
+            radius="xl"
+            withBorder
+            style={{
+              ...cardStyle,
+              boxShadow: '0 1px 2px rgba(11, 18, 32, 0.04), 0 12px 28px -12px rgba(11, 18, 32, 0.16)',
+              overflow: 'hidden',
+            }}
+          >
+            <Table highlightOnHover verticalSpacing="sm" horizontalSpacing="md">
+              <Table.Thead style={{ backgroundColor: 'var(--color-table-header)' }}>
+                <Table.Tr>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Nom</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Date souhaitée</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Motif</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</Table.Th>
+                  <Table.Th></Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {demandesFiltrees.map(function (demande) {
                   return (
-                    <tr
+                    <Table.Tr
                       key={demande.id}
-                      className="border-t border-border cursor-pointer hover:bg-surface transition-colors"
+                      style={{ cursor: 'pointer' }}
                       onClick={function () {
                         navigate('/admin/demandes/' + demande.id)
                       }}
                     >
-                      <td className="px-4 py-3 font-medium">{demande.nom}</td>
-                      <td className="px-4 py-3">
+                      <Table.Td className="font-medium">{demande.nom}</Table.Td>
+                      <Table.Td>
                         <span className="font-mono text-xs">{formatDateTime(demande.date_heure_creneau)}</span>
                         {demande.conflits > 0 && (
                           <span className="ml-2 inline-flex items-center gap-1 text-xs text-signal bg-signal/10 px-2 py-0.5 rounded-full">
                             {'\u26A0 ' + demande.conflits + ' autre(s)'}
                           </span>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-ink-muted">{demande.motif}</td>
-                      <td className="px-4 py-3">
+                      </Table.Td>
+                      <Table.Td className="text-ink-muted">{demande.motif}</Table.Td>
+                      <Table.Td>
                         <Badge statut={demande.statut} />
-                      </td>
-                      <td className="px-4 py-3 text-ink-muted text-right">
+                      </Table.Td>
+                      <Table.Td className="text-ink-muted text-right">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block">
                           <path d="m9 18 6-6-6-6" />
                         </svg>
-                      </td>
-                    </tr>
+                      </Table.Td>
+                    </Table.Tr>
                   )
                 })}
-              </tbody>
-            </table>
-          </div>
+              </Table.Tbody>
+            </Table>
+          </Paper>
         )}
       </div>
     </div>
