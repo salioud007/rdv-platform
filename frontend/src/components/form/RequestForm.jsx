@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Textarea, Alert } from '@mantine/core'
 import Input from '../common/Input'
 import Button from '../common/Button'
 import SlotSelector from './SlotSelector'
@@ -91,12 +92,6 @@ export default function RequestForm({ onSuccess }) {
     }
   }
 
-  const labelClasses = [
-    'text-sm',
-    'font-medium',
-    'text-ink',
-  ].join(' ')
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-lg mx-auto">
       <Input
@@ -147,25 +142,34 @@ export default function RequestForm({ onSuccess }) {
         onChange={setFichier}
         error={erreurs.fichier}
       />
-      <div className="flex flex-col gap-1">
-        <label htmlFor="message" className={labelClasses}>
-          Message complementaire (optionnel)
-        </label>
-        <textarea
-          id="message"
-          value={message}
-          onChange={function (e) {
-            setMessage(e.target.value)
-          }}
-          rows={3}
-          className="border border-border rounded-sm px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent"
-        />
-      </div>
+      <Textarea
+        id="message"
+        label="Message complementaire (optionnel)"
+        value={message}
+        onChange={function (e) {
+          setMessage(e.target.value)
+        }}
+        rows={3}
+        styles={{
+          input: {
+            borderRadius: '0.75rem',
+            borderColor: 'var(--color-border)',
+            backgroundColor: 'white',
+            fontSize: '0.875rem',
+          },
+          label: {
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            color: 'var(--color-ink)',
+            marginBottom: '0.5rem',
+          },
+        }}
+      />
 
       {erreurServeur && (
-        <p className="text-sm text-danger border border-danger rounded-sm px-3 py-2">
+        <Alert color="var(--color-danger)" variant="light" radius="lg">
           {erreurServeur}
-        </p>
+        </Alert>
       )}
 
       <Button type="submit" disabled={envoiEnCours}>

@@ -1,7 +1,9 @@
+import { Loader as MantineLoader } from '@mantine/core'
+
 export default function Loader({ label = 'Chargement...' }) {
   return (
     <div className="flex items-center gap-2 text-sm text-ink-muted">
-      <span className="animate-spin inline-block w-4 h-4 border-2 border-border border-t-ink rounded-full"></span>
+      <MantineLoader color="var(--color-accent)" type="dots" size="sm" />
       {label}
     </div>
   )

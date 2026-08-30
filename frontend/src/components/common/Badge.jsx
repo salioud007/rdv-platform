@@ -1,18 +1,39 @@
+import { Badge as MantineBadge } from '@mantine/core'
+
 const STYLES = {
-  'En attente de traitement': 'bg-signal/10 text-signal',
-  "En cours d'examen": 'bg-accent/10 text-accent',
-  'Acceptée': 'bg-success/10 text-success',
-  'Refusée': 'bg-danger/10 text-danger',
+  'En attente de traitement': 'var(--color-signal)',
+  "En cours d'examen": 'var(--color-accent)',
+  'Acceptée': 'var(--color-success)',
+  'Refusée': 'var(--color-danger)',
 }
 
 export default function Badge({ statut }) {
-  const style = STYLES[statut] || 'bg-secondary-hover text-ink-muted'
+  const couleur = STYLES[statut] || 'var(--color-ink-muted)'
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-mono uppercase tracking-wide ${style}`}
+    <MantineBadge
+      variant="light"
+      radius="xl"
+      leftSection={
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: '9999px',
+            backgroundColor: couleur,
+            display: 'inline-block',
+          }}
+        />
+      }
+      style={{
+        backgroundColor: `color-mix(in srgb, ${couleur} 10%, transparent)`,
+        color: couleur,
+        fontFamily: 'var(--font-mono)',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
+        fontSize: '0.6875rem',
+      }}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-current" />
       {statut}
-    </span>
+    </MantineBadge>
   )
 }
