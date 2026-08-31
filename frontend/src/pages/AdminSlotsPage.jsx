@@ -1,30 +1,33 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Paper, NumberInput, Table, Badge as MantineBadge } from '@mantine/core'
+import { DateTimePicker } from '@mantine/dates'
 import Button from '../components/common/Button'
-import Input from '../components/common/Input'
 import Loader from '../components/common/Loader'
 import { listerTousLesCreneaux, creerCreneau } from '../services/slotService'
 import { formatDateTime } from '../utils/formatDate'
 
 function obtenirDateMinimale() {
-  const maintenant = new Date()
-  maintenant.setMinutes(maintenant.getMinutes() - maintenant.getTimezoneOffset())
-  return maintenant.toISOString().slice(0, 16)
+  return new Date()
 }
 
 function obtenirDateMaximale() {
   const dansDeuxAns = new Date()
   dansDeuxAns.setFullYear(dansDeuxAns.getFullYear() + 2)
-  dansDeuxAns.setMinutes(dansDeuxAns.getMinutes() - dansDeuxAns.getTimezoneOffset())
-  return dansDeuxAns.toISOString().slice(0, 16)
+  return dansDeuxAns
+}
+
+const cardStyle = {
+  backgroundColor: 'var(--color-surface-alt)',
+  borderColor: 'var(--color-border)',
 }
 
 export default function AdminSlotsPage() {
   const navigate = useNavigate()
   const [creneaux, setCreneaux] = useState([])
   const [chargement, setChargement] = useState(true)
-  const [dateHeure, setDateHeure] = useState('')
-  const [dureeMinutes, setDureeMinutes] = useState('30')
+  const [dateHeure, setDateHeure] = useState(null)
+  const [dureeMinutes, setDureeMinutes] = useState(30)
   const [erreur, setErreur] = useState(null)
 
   const dateMinimale = obtenirDateMinimale()
@@ -85,9 +88,9 @@ export default function AdminSlotsPage() {
     }
 
     try {
-      const dateFormatee = dateHeure.replace('T', ' ') + ':00'
+      const dateFormatee = dateHeure.length === 16 ? dateHeure + ':00' : dateHeure
       await creerCreneau(dateFormatee, duree)
-      setDateHeure('')
+      setDateHeure(null)
       chargerCreneaux()
     } catch (err) {
       const messageErreur =
@@ -100,18 +103,21 @@ export default function AdminSlotsPage() {
     }
   }
 
-  const formeClasses = [
-    'bg-surface-alt',
-    'rounded-2xl',
-    'shadow-card',
-    'border',
-    'border-border',
-    'p-6',
-    'mb-6',
-    'flex',
-    'gap-3',
-    'items-end',
-  ].join(' ')
+  const inputStyles = {
+    input: {
+      borderRadius: '0.75rem',
+      borderColor: 'var(--color-border)',
+      backgroundColor: 'white',
+      fontSize: '0.875rem',
+      height: '2.75rem',
+    },
+    label: {
+      fontSize: '0.8125rem',
+      fontWeight: 600,
+      color: 'var(--color-ink)',
+      marginBottom: '0.5rem',
+    },
+  }
 
   return (
     <div className="min-h-screen bg-surface text-ink px-4 py-10">
@@ -128,87 +134,101 @@ export default function AdminSlotsPage() {
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className={formeClasses}>
-          <Input
-            id="dateHeure"
+        <Paper
+          component="form"
+          onSubmit={handleSubmit}
+          radius="xl"
+          withBorder
+          style={{
+            ...cardStyle,
+            boxShadow: '0 1px 2px rgba(11, 18, 32, 0.04), 0 12px 28px -12px rgba(11, 18, 32, 0.16)',
+          }}
+          p="lg"
+          className="mb-6 flex gap-3 items-end flex-wrap"
+        >
+          <DateTimePicker
             label="Date et heure"
-            type="datetime-local"
-            min={dateMinimale}
-            max={dateMaximale}
+            placeholder="Choisir une date"
+            minDate={dateMinimale}
+            maxDate={dateMaximale}
             value={dateHeure}
-            onChange={function (e) {
-              setDateHeure(e.target.value)
-            }}
+            onChange={setDateHeure}
+            valueFormat="DD MMM YYYY HH:mm"
+            styles={inputStyles}
+            className="flex-1"
           />
-          <Input
-            id="duree"
+          <NumberInput
             label="Duree (minutes)"
-            type="number"
-            min="1"
-            max="480"
+            min={1}
+            max={480}
             value={dureeMinutes}
-            onChange={function (e) {
-              setDureeMinutes(e.target.value)
-            }}
+            onChange={setDureeMinutes}
+            styles={inputStyles}
+            className="w-32"
           />
           <Button type="submit">
             Ajouter
           </Button>
-        </form>
+        </Paper>
 
         {erreur && (
           <p className="text-sm text-danger mb-4">{erreur}</p>
         )}
 
         {chargement ? (
-          <div className="bg-surface-alt rounded-2xl border border-border p-8 flex justify-center">
+          <Paper radius="xl" withBorder style={cardStyle} p="xl" className="flex justify-center">
             <Loader label="Chargement des creneaux..." />
-          </div>
+          </Paper>
         ) : creneaux.length === 0 ? (
-          <div className="bg-surface-alt rounded-2xl border border-border p-12 text-center">
+          <Paper radius="xl" withBorder style={cardStyle} p="xl" className="text-center">
             <p className="text-sm text-ink-muted">
               Aucun creneau cree pour le moment.
             </p>
-          </div>
+          </Paper>
         ) : (
-          <div className="rounded-2xl shadow-card border border-border bg-surface-alt overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-table-header text-left">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Date</th>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Duree</th>
-                  <th className="px-4 py-3 text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Paper
+            radius="xl"
+            withBorder
+            style={{
+              ...cardStyle,
+              boxShadow: '0 1px 2px rgba(11, 18, 32, 0.04), 0 12px 28px -12px rgba(11, 18, 32, 0.16)',
+              overflow: 'hidden',
+            }}
+          >
+            <Table verticalSpacing="sm" horizontalSpacing="md">
+              <Table.Thead style={{ backgroundColor: 'var(--color-table-header)' }}>
+                <Table.Tr>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Date</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Duree</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {creneaux.map(function (creneau) {
                   return (
-                    <tr key={creneau.id} className="border-t border-border">
-                      <td className="px-4 py-3 font-mono text-xs">
+                    <Table.Tr key={creneau.id}>
+                      <Table.Td className="font-mono text-xs">
                         {formatDateTime(creneau.date_heure)}
-                      </td>
-                      <td className="px-4 py-3 text-ink-muted">
+                      </Table.Td>
+                      <Table.Td className="text-ink-muted">
                         {creneau.duree_minutes} min
-                      </td>
-                      <td className="px-4 py-3">
-                        {creneau.disponible ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wide bg-success/10 text-success rounded-full px-3 py-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                            Disponible
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wide bg-secondary-hover text-ink-muted rounded-full px-3 py-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                            Pris
-                          </span>
-                        )}
-                      </td>
-                    </tr>
+                      </Table.Td>
+                      <Table.Td>
+                        <MantineBadge
+                          variant="light"
+                          radius="xl"
+                          color={creneau.disponible ? 'var(--color-success)' : 'var(--color-ink-muted)'}
+                          style={{ fontFamily: 'var(--font-mono)', textTransform: 'uppercase', fontSize: '0.6875rem' }}
+                        >
+                          {creneau.disponible ? 'Disponible' : 'Pris'}
+                        </MantineBadge>
+                      </Table.Td>
+                    </Table.Tr>
                   )
                 })}
-              </tbody>
-            </table>
-          </div>
+              </Table.Tbody>
+            </Table>
+          </Paper>
         )}
       </div>
     </div>
