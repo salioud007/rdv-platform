@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Paper, Modal, Textarea } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import Badge from '../components/common/Badge'
 import Loader from '../components/common/Loader'
 import Button from '../components/common/Button'
@@ -11,6 +13,12 @@ import {
 } from '../services/requestService'
 import { formatDateTime } from '../utils/formatDate'
 
+const cardStyle = {
+  backgroundColor: 'var(--color-surface-alt)',
+  borderColor: 'var(--color-border)',
+  boxShadow: '0 1px 2px rgba(11, 18, 32, 0.04), 0 12px 28px -12px rgba(11, 18, 32, 0.16)',
+}
+
 export default function AdminRequestDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -19,6 +27,8 @@ export default function AdminRequestDetailPage() {
   const [chargement, setChargement] = useState(true)
   const [enTraitement, setEnTraitement] = useState(false)
   const [erreur, setErreur] = useState(null)
+  const [decisionEnAttente, setDecisionEnAttente] = useState(null)
+  const [opened, { open, close }] = useDisclosure(false)
 
   useEffect(function () {
     obtenirDetailDemande(id)
@@ -30,11 +40,17 @@ export default function AdminRequestDetailPage() {
       })
   }, [id])
 
-  async function handleDecision(decision) {
+  function demanderConfirmation(decision) {
+    setDecisionEnAttente(decision)
+    open()
+  }
+
+  async function confirmerDecision() {
     setEnTraitement(true)
     setErreur(null)
+    close()
     try {
-      const result = await traiterDemande(id, decision, commentaire)
+      const result = await traiterDemande(id, decisionEnAttente, commentaire)
       setDemande(result)
     } catch (err) {
       setErreur('Erreur lors du traitement de la demande.')
@@ -98,7 +114,7 @@ export default function AdminRequestDetailPage() {
           Retour au tableau de bord
         </button>
 
-        <div className="bg-surface-alt rounded-2xl shadow-card border border-border p-8">
+        <Paper radius="xl" withBorder style={cardStyle} p="xl">
           <div className="flex justify-between items-start mb-1">
             <span className="eyebrow">Demande</span>
             <Badge statut={demande.statut} />
@@ -132,30 +148,41 @@ export default function AdminRequestDetailPage() {
 
           {!dejaTraitee && (
             <div className="mt-6 pt-6 border-t border-border">
-              <label htmlFor="commentaire" className="text-sm font-medium block mb-2">
-                Commentaire (optionnel)
-              </label>
-              <textarea
-                id="commentaire"
+              <Textarea
+                label="Commentaire (optionnel)"
                 value={commentaire}
                 onChange={function (e) {
                   setCommentaire(e.target.value)
                 }}
                 rows={3}
-                className="w-full border border-border rounded-lg px-3.5 py-2.5 text-sm mb-4 transition-shadow duration-150 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+                className="mb-4"
+                styles={{
+                  input: {
+                    borderRadius: '0.75rem',
+                    borderColor: 'var(--color-border)',
+                    backgroundColor: 'white',
+                    fontSize: '0.875rem',
+                  },
+                  label: {
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    color: 'var(--color-ink)',
+                    marginBottom: '0.5rem',
+                  },
+                }}
               />
               <div className="flex gap-3">
                 <Button
                   variant="success"
                   disabled={enTraitement}
-                  onClick={function () { handleDecision('Acceptee') }}
+                  onClick={function () { demanderConfirmation('Acceptee') }}
                 >
                   Accepter
                 </Button>
                 <Button
                   variant="danger"
                   disabled={enTraitement}
-                  onClick={function () { handleDecision('Refusee') }}
+                  onClick={function () { demanderConfirmation('Refusee') }}
                 >
                   Refuser
                 </Button>
@@ -173,8 +200,33 @@ export default function AdminRequestDetailPage() {
               </p>
             </div>
           )}
-        </div>
+        </Paper>
       </div>
+
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Confirmer la décision"
+        radius="lg"
+        centered
+      >
+        <p className="text-sm text-ink-muted mb-6">
+          {decisionEnAttente === 'Acceptee'
+            ? 'Confirmez-vous l\'acceptation de cette demande ? Le demandeur pourra télécharger son fichier .ics.'
+            : 'Confirmez-vous le refus de cette demande ?'}
+        </p>
+        <div className="flex gap-3 justify-end">
+          <Button variant="secondary" onClick={close}>
+            Annuler
+          </Button>
+          <Button
+            variant={decisionEnAttente === 'Acceptee' ? 'success' : 'danger'}
+            onClick={confirmerDecision}
+          >
+            Confirmer
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }
