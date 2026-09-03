@@ -1,5 +1,5 @@
 import datetime
-from app.models import demande, creneau
+from app.models import demande, creneau, demande_historique
 from app.services import file_service, token_service, conflict_service
 from flask import current_app
 
@@ -57,6 +57,7 @@ def obtenir_detail(demande_id):
         return None
     if row["statut"] == "En attente de traitement":
         demande.update_statut(demande_id, "En cours d'examen")
+        demande_historique.create(demande_id, row["statut"], "En cours d'examen")
         row = demande.find_by_id(demande_id)
     return dict(row)
 
@@ -67,11 +68,27 @@ def traiter_demande(demande_id, decision, commentaire):
     if decision not in ("Acceptee", "Refusee"):
         return None, "Decision invalide (Acceptee ou Refusee attendu)"
 
-    statut = "Acceptée" if decision == "Acceptee" else "Refusée"
-    date_traitement = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    demande.update_statut(demande_id, statut, commentaire, date_traitement)
+    ancien_statut = row["statut"]
+    nouveau_statut = "Acceptée" if decision == "Acceptee" else "Refusée"
 
-    if statut == "Refusée":
+    # Ré-acceptation après un refus : le creneau a ete libere au moment du refus,
+    # il faut donc le re-reserver avant de confirmer l'acceptation.
+    if nouveau_statut == "Acceptée" and ancien_statut == "Refusée":
+        reservation_reussie = creneau.reserver_si_disponible(row["creneau_id"])
+        if not reservation_reussie:
+            return None, "Ce creneau n'est plus disponible (pris par une autre demande entre-temps)"
+
+    date_traitement = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    demande.update_statut(demande_id, nouveau_statut, commentaire, date_traitement)
+    demande_historique.create(demande_id, ancien_statut, nouveau_statut, commentaire)
+
+    if nouveau_statut == "Refusée":
         creneau.liberer(row["creneau_id"])
 
     return dict(demande.find_by_id(demande_id)), None
+
+def obtenir_historique(demande_id):
+    row = demande.find_by_id(demande_id)
+    if row is None:
+        return None
+    return [dict(h) for h in demande_historique.find_by_demande_id(demande_id)]

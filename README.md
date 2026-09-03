@@ -53,7 +53,7 @@ UPLOAD_FOLDER=./uploads
 Initialiser la base de donnees avec des donnees de test :
 
 ```bash
-./venv/Scripts/python.exe -c "
+   ./venv/Scripts/python.exe run.py "
 from app import create_app
 from app.database.seed import run_seed
 app = create_app()

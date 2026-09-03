@@ -8,6 +8,7 @@ import Button from '../components/common/Button'
 import api from '../services/api'
 import {
   obtenirDetailDemande,
+  obtenirHistoriqueDemande,
   traiterDemande,
   urlTelechargerFichier,
 } from '../services/requestService'
@@ -23,6 +24,7 @@ export default function AdminRequestDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [demande, setDemande] = useState(null)
+  const [historique, setHistorique] = useState([])
   const [commentaire, setCommentaire] = useState('')
   const [chargement, setChargement] = useState(true)
   const [enTraitement, setEnTraitement] = useState(false)
@@ -38,6 +40,13 @@ export default function AdminRequestDetailPage() {
       .finally(function () {
         setChargement(false)
       })
+    obtenirHistoriqueDemande(id)
+      .then(function (data) {
+        setHistorique(data)
+      })
+      .catch(function () {
+        setHistorique([])
+      })
   }, [id])
 
   function demanderConfirmation(decision) {
@@ -52,6 +61,9 @@ export default function AdminRequestDetailPage() {
     try {
       const result = await traiterDemande(id, decisionEnAttente, commentaire)
       setDemande(result)
+      setCommentaire('')
+      const nouvelHistorique = await obtenirHistoriqueDemande(id)
+      setHistorique(nouvelHistorique)
     } catch (err) {
       setErreur('Erreur lors du traitement de la demande.')
     } finally {
@@ -92,7 +104,8 @@ export default function AdminRequestDetailPage() {
     )
   }
 
-  const dejaTraitee = demande.statut === 'Acceptée' || demande.statut === 'Refusée'
+  const demandeFinalisee = demande.statut === 'Acceptée'
+  const dejaTraitee = demandeFinalisee
 
   const champs = [
     { label: 'Email', valeur: demande.email },
@@ -190,14 +203,45 @@ export default function AdminRequestDetailPage() {
             </div>
           )}
 
-          {dejaTraitee && demande.commentaire_admin && (
+          {demande.commentaire_admin && (
             <div className="mt-6 pt-6 border-t border-border">
               <p className="text-xs text-ink-muted uppercase tracking-wide font-mono mb-2">
-                Commentaire laissé
+                Dernier commentaire laissé
               </p>
               <p className="text-sm bg-surface border border-border rounded-lg px-3 py-2 leading-relaxed">
                 {demande.commentaire_admin}
               </p>
+            </div>
+          )}
+
+          {historique.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-border">
+              <p className="text-xs text-ink-muted uppercase tracking-wide font-mono mb-3">
+                Historique des décisions
+              </p>
+              <ul className="space-y-3">
+                {historique.map(function (entree, index) {
+                  return (
+                    <li key={entree.id} className="text-sm bg-surface border border-border rounded-lg px-3 py-2">
+                      <div className="flex justify-between items-center gap-3">
+                        <span>
+                          <span className="text-ink-muted">{entree.ancien_statut}</span>
+                          {' → '}
+                          <span className="font-medium">{entree.nouveau_statut}</span>
+                        </span>
+                        <span className="font-mono text-xs text-ink-muted shrink-0">
+                          {formatDateTime(entree.date_changement)}
+                        </span>
+                      </div>
+                      {entree.commentaire_admin && (
+                        <p className="text-ink-muted mt-1 text-xs leading-relaxed">
+                          {entree.commentaire_admin}
+                        </p>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
             </div>
           )}
         </Paper>
@@ -212,8 +256,10 @@ export default function AdminRequestDetailPage() {
       >
         <p className="text-sm text-ink-muted mb-6">
           {decisionEnAttente === 'Acceptee'
-            ? 'Confirmez-vous l\'acceptation de cette demande ? Le demandeur pourra télécharger son fichier .ics.'
-            : 'Confirmez-vous le refus de cette demande ?'}
+            ? (demande.statut === 'Refusée'
+                ? 'Cette demande a déjà été refusée. Confirmez-vous sa réévaluation et son acceptation ? Le demandeur pourra télécharger son fichier .ics.'
+                : 'Confirmez-vous l\'acceptation de cette demande ? Le demandeur pourra télécharger son fichier .ics.')
+            : 'Confirmez-vous le refus de cette demande ?'}
         </p>
         <div className="flex gap-3 justify-end">
           <Button variant="secondary" onClick={close}>

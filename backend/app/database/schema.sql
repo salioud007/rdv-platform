@@ -27,3 +27,13 @@ CREATE TABLE IF NOT EXISTS demandes (
     date_traitement DATETIME,
     FOREIGN KEY (creneau_id) REFERENCES creneaux(id)
 );
+
+CREATE TABLE IF NOT EXISTS demande_historique (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    demande_id INTEGER NOT NULL,
+    ancien_statut TEXT,
+    nouveau_statut TEXT NOT NULL,
+    commentaire_admin TEXT,
+    date_changement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (demande_id) REFERENCES demandes(id)
+);

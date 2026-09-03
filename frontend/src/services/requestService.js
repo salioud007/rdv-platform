@@ -25,6 +25,11 @@ export async function traiterDemande(id, decision, commentaire) {
   return response.data
 }
 
+export async function obtenirHistoriqueDemande(id) {
+  const response = await api.get(`/demandes/${id}/historique`)
+  return response.data
+}
+
 export function urlTelechargerFichier(id) {
   return `${api.defaults.baseURL}/demandes/${id}/fichier`
 }

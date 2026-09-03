@@ -8,4 +8,4 @@ class Config:
     JWT_SECRET = os.environ.get("JWT_SECRET")
     DB_PATH = os.environ.get("DB_PATH", "./database.sqlite")
     UPLOAD_FOLDER = os.path.abspath(os.environ.get("UPLOAD_FOLDER", "./uploads"))
-    MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 50 * 1024 * 1024

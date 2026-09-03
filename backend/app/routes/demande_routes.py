@@ -51,6 +51,14 @@ def decision(demande_id):
     return jsonify(result), 200
 
 
+@demande_bp.route("/<int:demande_id>/historique", methods=["GET"])
+@auth_required
+def historique(demande_id):
+    result = demande_controller.obtenir_historique(demande_id)
+    if result is None:
+        return jsonify({"error": "Demande introuvable"}), 404
+    return jsonify(result), 200
+
 @demande_bp.route("/<int:demande_id>/fichier", methods=["GET"])
 @auth_required
 def telecharger_fichier(demande_id):
