@@ -16,7 +16,7 @@ def login(email, password):
     payload = {
         "admin_id": admin["id"],
         "email": admin["email"],
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=8),
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
     }
     token = jwt.encode(payload, current_app.config["JWT_SECRET"], algorithm="HS256")
 

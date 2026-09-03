@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-
+import Loader from '../components/common/Loader'
 import HomePage from '../pages/HomePage'
 import ConfirmationPage from '../pages/ConfirmationPage'
 import TrackingPage from '../pages/TrackingPage'
@@ -10,7 +10,16 @@ import AdminSlotsPage from '../pages/AdminSlotsPage'
 import AdminRequestDetailPage from '../pages/AdminRequestDetailPage'
 
 function RouteProtegee({ children }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, pret } = useAuth()
+
+  if (!pret) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader label="Vérification de la session..." />
+      </div>
+    )
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />
   }
