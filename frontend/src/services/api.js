@@ -20,4 +20,17 @@ export function getStoredToken() {
   return localStorage.getItem(TOKEN_KEY)
 }
 
+api.interceptors.response.use(
+  function (response) {
+    return response
+  },
+  function (error) {
+    if (error.response && error.response.status === 401 && getStoredToken()) {
+      setAuthToken(null)
+      window.dispatchEvent(new CustomEvent('session-expiree'))
+    }
+    return Promise.reject(error)
+  }
+)
+
 export default api

@@ -17,6 +17,16 @@ export function AuthProvider({ children }) {
     setPret(true)
   }, [])
 
+  useEffect(function () {
+    function handleSessionExpiree() {
+      setIsAuthenticated(false)
+    }
+    window.addEventListener('session-expiree', handleSessionExpiree)
+    return function () {
+      window.removeEventListener('session-expiree', handleSessionExpiree)
+    }
+  }, [])
+
   async function login(email, password) {
     await loginService(email, password)
     setIsAuthenticated(true)
