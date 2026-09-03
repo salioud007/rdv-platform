@@ -5,7 +5,7 @@ export default function FileUploadField({ fichier, onChange, error }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-ink">
-        Piece jointe (5 Mo max)
+        Piece jointe
       </label>
       <Dropzone
         onDrop={(files) => onChange(files[0] || null)}
