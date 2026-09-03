@@ -29,17 +29,25 @@ export default function AdminDashboardPage() {
   const [chargement, setChargement] = useState(true)
 
   useEffect(function () {
-    chargerDemandes()
+    chargerDemandes(true)
+
+    const intervalId = setInterval(function () {
+      chargerDemandes(false)
+    }, 3000)
+
+    return function () {
+      clearInterval(intervalId)
+    }
   }, [])
 
-  function chargerDemandes() {
-    setChargement(true)
+  function chargerDemandes(estPremierChargement) {
+    if (estPremierChargement) setChargement(true)
     listerDemandes()
       .then(function (data) {
         setDemandes(data)
       })
       .finally(function () {
-        setChargement(false)
+        if (estPremierChargement) setChargement(false)
       })
   }
 

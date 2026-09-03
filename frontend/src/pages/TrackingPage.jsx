@@ -6,30 +6,54 @@ import Loader from '../components/common/Loader'
 import Button from '../components/common/Button'
 import { obtenirSuiviParToken, urlTelechargerIcs } from '../services/requestService'
 import { formatDateTime } from '../utils/formatDate'
-
 const cardStyle = {
   backgroundColor: 'var(--color-surface-alt)',
   borderColor: 'var(--color-border)',
   boxShadow: '0 1px 2px rgba(11, 18, 32, 0.04), 0 12px 28px -12px rgba(11, 18, 32, 0.16)',
 }
-
 export default function TrackingPage() {
   const { token } = useParams()
   const [demande, setDemande] = useState(null)
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(true)
+
   useEffect(function () {
-    obtenirSuiviParToken(token)
-      .then(function (data) {
-        setDemande(data)
+    let isActif = true
+
+    function charger(estPremierChargement) {
+      obtenirSuiviParToken(token)
+        .then(function (data) {
+          if (!isActif) return
+          setDemande(data)
+          setErreur(null)
+        })
+        .catch(function () {
+          if (!isActif) return
+          setErreur('Ce lien de suivi est invalide ou la demande est introuvable.')
+        })
+        .finally(function () {
+          if (isActif && estPremierChargement) setChargement(false)
+        })
+    }
+
+    charger(true)
+
+    const intervalId = setInterval(function () {
+      setDemande(function (demandeActuelle) {
+        if (demandeActuelle && (demandeActuelle.statut === 'Acceptée' || demandeActuelle.statut === 'Refusée')) {
+          clearInterval(intervalId)
+        }
+        return demandeActuelle
       })
-      .catch(function () {
-        setErreur('Ce lien de suivi est invalide ou la demande est introuvable.')
-      })
-      .finally(function () {
-        setChargement(false)
-      })
+      charger(false)
+    }, 3000)
+
+    return function () {
+      isActif = false
+      clearInterval(intervalId)
+    }
   }, [token])
+
   if (chargement) {
     return (
       <div className="min-h-screen bg-surface text-ink px-4 py-16 flex flex-col items-center justify-center">
