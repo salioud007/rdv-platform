@@ -3,7 +3,7 @@ from app.database.connection import get_db
 def create(date_heure, duree_minutes):
     db = get_db()
     cursor = db.execute(
-        "INSERT INTO creneaux (date_heure, duree_minutes, disponible) VALUES (?, ?, 1)",
+        "INSERT INTO creneaux (date_heure, duree_minutes, disponible, statut) VALUES (?, ?, 1, 'Ouvert')",
         (date_heure, duree_minutes),
     )
     db.commit()
@@ -27,17 +27,26 @@ def find_by_id(creneau_id):
         "SELECT * FROM creneaux WHERE id = ?", (creneau_id,)
     ).fetchone()
 
-def marquer_indisponible(creneau_id):
+def marquer_reserve(creneau_id):
     db = get_db()
     db.execute(
-        "UPDATE creneaux SET disponible = 0 WHERE id = ?", (creneau_id,)
+        "UPDATE creneaux SET disponible = 0, statut = 'Reserve' WHERE id = ?",
+        (creneau_id,),
+    )
+    db.commit()
+
+def marquer_annule(creneau_id):
+    db = get_db()
+    db.execute(
+        "UPDATE creneaux SET disponible = 0, statut = 'Annule' WHERE id = ?",
+        (creneau_id,),
     )
     db.commit()
 
 def reserver_si_disponible(creneau_id):
     db = get_db()
     cursor = db.execute(
-        "UPDATE creneaux SET disponible = 0 WHERE id = ? AND disponible = 1",
+        "UPDATE creneaux SET disponible = 0, statut = 'Reserve' WHERE id = ? AND disponible = 1",
         (creneau_id,),
     )
     db.commit()
@@ -46,6 +55,12 @@ def reserver_si_disponible(creneau_id):
 def liberer(creneau_id):
     db = get_db()
     db.execute(
-        "UPDATE creneaux SET disponible = 1 WHERE id = ?", (creneau_id,)
+        "UPDATE creneaux SET disponible = 1, statut = 'Ouvert' WHERE id = ?",
+        (creneau_id,),
     )
+    db.commit()
+
+def supprimer(creneau_id):
+    db = get_db()
+    db.execute("DELETE FROM creneaux WHERE id = ?", (creneau_id,))
     db.commit()

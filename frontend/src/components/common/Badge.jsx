@@ -5,10 +5,20 @@ const STYLES = {
   "En cours d'examen": 'var(--color-accent)',
   'Acceptée': 'var(--color-success)',
   'Refusée': 'var(--color-danger)',
+  'Ouvert': 'var(--color-success)',
+  'Reserve': 'var(--color-ink-muted)',
+  'Annule': 'var(--color-danger)',
+}
+
+const LABELS = {
+  'Ouvert': 'Disponible',
+  'Reserve': 'Reserve',
+  'Annule': 'Annule',
 }
 
 export default function Badge({ statut }) {
   const couleur = STYLES[statut] || 'var(--color-ink-muted)'
+  const label = LABELS[statut] || statut
   return (
     <MantineBadge
       variant="light"
@@ -33,7 +43,7 @@ export default function Badge({ statut }) {
         fontSize: '0.6875rem',
       }}
     >
-      {statut}
+      {label}
     </MantineBadge>
   )
 }

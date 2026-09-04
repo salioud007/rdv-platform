@@ -17,3 +17,8 @@ export async function creerCreneau(dateHeure, dureeMinutes) {
   })
   return response.data
 }
+
+export async function supprimerCreneau(creneauId) {
+  const response = await api.delete(`/creneaux/${creneauId}`)
+  return response.data
+}

@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS creneaux (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_heure DATETIME NOT NULL,
     duree_minutes INTEGER NOT NULL,
-    disponible BOOLEAN NOT NULL DEFAULT 1
+    disponible BOOLEAN NOT NULL DEFAULT 1,
+    statut TEXT NOT NULL DEFAULT 'Ouvert'
 );
 
 CREATE TABLE IF NOT EXISTS demandes (

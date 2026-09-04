@@ -29,3 +29,11 @@ def creer():
         return jsonify({"error": error}), 400
 
     return jsonify({"id": creneau_id}), 201
+
+@creneau_bp.route("/<int:creneau_id>", methods=["DELETE"])
+@auth_required
+def supprimer(creneau_id):
+    result, error, status = creneau_controller.supprimer_creneau(creneau_id)
+    if error:
+        return jsonify({"error": error}), status
+    return jsonify(result), status

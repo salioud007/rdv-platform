@@ -1,5 +1,7 @@
 from datetime import datetime
-from app.models import creneau
+from app.models import creneau, demande
+
+STATUTS_BLOQUANTS = ("En attente de traitement", "En cours d'examen", "Acceptée")
 
 def lister_disponibles():
     rows = creneau.find_all_disponibles()
@@ -40,3 +42,24 @@ def creer_creneau(date_heure, duree_minutes):
 
     creneau_id = creneau.create(date_heure, duree)
     return creneau_id, None
+
+def supprimer_creneau(creneau_id):
+    creneau_row = creneau.find_by_id(creneau_id)
+    if creneau_row is None:
+        return None, "Creneau introuvable", 404
+
+    demandes_liees = demande.find_by_creneau_id(creneau_id)
+    demandes_actives = [d for d in demandes_liees if d["statut"] in STATUTS_BLOQUANTS]
+
+    if demandes_actives:
+        return None, (
+            f"{len(demandes_actives)} demande(s) active(s) sur ce creneau. "
+            "Traitez-les avant de le supprimer."
+        ), 409
+
+    if demandes_liees:
+        creneau.marquer_annule(creneau_id)
+        return {"annule": True}, None, 200
+
+    creneau.supprimer(creneau_id)
+    return {"supprime": True}, None, 200

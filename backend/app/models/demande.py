@@ -42,3 +42,9 @@ def update_statut(demande_id, statut, commentaire_admin=None, date_traitement=No
             (statut, demande_id),
         )
     db.commit()
+
+def find_by_creneau_id(creneau_id):
+    db = get_db()
+    return db.execute(
+        "SELECT * FROM demandes WHERE creneau_id = ?", (creneau_id,)
+    ).fetchall()

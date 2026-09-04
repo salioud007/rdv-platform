@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Paper, NumberInput, Table, Badge as MantineBadge } from '@mantine/core'
+import { Paper, NumberInput, Table } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import Button from '../components/common/Button'
 import Loader from '../components/common/Loader'
-import { listerTousLesCreneaux, creerCreneau } from '../services/slotService'
+import Badge from '../components/common/Badge'
+import { listerTousLesCreneaux, creerCreneau, supprimerCreneau } from '../services/slotService'
 import { formatDateTime } from '../utils/formatDate'
 
 function obtenirDateMinimale() {
@@ -29,6 +30,7 @@ export default function AdminSlotsPage() {
   const [dateHeure, setDateHeure] = useState(null)
   const [dureeMinutes, setDureeMinutes] = useState(30)
   const [erreur, setErreur] = useState(null)
+  const [suppressionEnCours, setSuppressionEnCours] = useState(null)
 
   const dateMinimale = obtenirDateMinimale()
   const dateMaximale = obtenirDateMaximale()
@@ -100,6 +102,31 @@ export default function AdminSlotsPage() {
           ? err.response.data.error
           : 'Erreur lors de la creation du creneau.'
       setErreur(messageErreur)
+    }
+  }
+
+  async function handleSupprimer(creneau) {
+    const confirmation = window.confirm(
+      `Supprimer le creneau du ${formatDateTime(creneau.date_heure)} ?`
+    )
+    if (!confirmation) return
+
+    setErreur(null)
+    setSuppressionEnCours(creneau.id)
+
+    try {
+      await supprimerCreneau(creneau.id)
+      chargerCreneaux()
+    } catch (err) {
+      const messageErreur =
+        err.response &&
+        err.response.data &&
+        err.response.data.error
+          ? err.response.data.error
+          : 'Erreur lors de la suppression du creneau.'
+      setErreur(messageErreur)
+    } finally {
+      setSuppressionEnCours(null)
     }
   }
 
@@ -201,6 +228,7 @@ export default function AdminSlotsPage() {
                   <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Date</Table.Th>
                   <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Duree</Table.Th>
                   <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Statut</Table.Th>
+                  <Table.Th className="text-xs font-medium text-ink-muted uppercase tracking-wide">Action</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -214,14 +242,18 @@ export default function AdminSlotsPage() {
                         {creneau.duree_minutes} min
                       </Table.Td>
                       <Table.Td>
-                        <MantineBadge
-                          variant="light"
-                          radius="xl"
-                          color={creneau.disponible ? 'var(--color-success)' : 'var(--color-ink-muted)'}
-                          style={{ fontFamily: 'var(--font-mono)', textTransform: 'uppercase', fontSize: '0.6875rem' }}
-                        >
-                          {creneau.disponible ? 'Disponible' : 'Pris'}
-                        </MantineBadge>
+                        <Badge statut={creneau.statut} />
+                      </Table.Td>
+                      <Table.Td>
+                        {creneau.statut !== 'Annule' && (
+                          <Button
+                            variant="secondary"
+                            onClick={function () { handleSupprimer(creneau) }}
+                            disabled={suppressionEnCours === creneau.id}
+                          >
+                            {suppressionEnCours === creneau.id ? '...' : 'Supprimer'}
+                          </Button>
+                        )}
                       </Table.Td>
                     </Table.Tr>
                   )
