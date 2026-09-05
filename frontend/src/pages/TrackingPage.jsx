@@ -40,7 +40,7 @@ export default function TrackingPage() {
 
     const intervalId = setInterval(function () {
       setDemande(function (demandeActuelle) {
-        if (demandeActuelle && (demandeActuelle.statut === 'Acceptée' || demandeActuelle.statut === 'Refusée')) {
+        if (demandeActuelle && demandeActuelle.statut === 'Acceptée') {
           clearInterval(intervalId)
         }
         return demandeActuelle
