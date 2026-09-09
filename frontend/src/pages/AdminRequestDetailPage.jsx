@@ -80,7 +80,7 @@ export default function AdminRequestDetailPage() {
       const url = window.URL.createObjectURL(response.data)
       const lien = document.createElement('a')
       lien.href = url
-      lien.download = 'piece-jointe'
+      lien.download = demande.nom_fichier_original || demande.fichier_path
       lien.click()
       window.URL.revokeObjectURL(url)
     } catch (err) {

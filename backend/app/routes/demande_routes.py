@@ -66,6 +66,10 @@ def telecharger_fichier(demande_id):
     if row is None:
         return jsonify({"error": "Demande introuvable"}), 404
 
+    nom_affiche = row["nom_fichier_original"] or row["fichier_path"]
     return send_from_directory(
-        current_app.config["UPLOAD_FOLDER"], row["fichier_path"], as_attachment=True
+        current_app.config["UPLOAD_FOLDER"],
+        row["fichier_path"],
+        as_attachment=True,
+        download_name=nom_affiche,
     )

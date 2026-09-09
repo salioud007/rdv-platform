@@ -22,7 +22,7 @@ def creer_demande(form_data, fichier):
     if not reservation_reussie:
         return None, "Ce creneau vient d'etre pris par quelqu'un d'autre"
 
-    nom_fichier, error = file_service.valider_et_sauvegarder(
+    nom_fichier, nom_fichier_original, error = file_service.valider_et_sauvegarder(
         fichier, current_app.config["UPLOAD_FOLDER"]
     )
     if error:
@@ -31,7 +31,7 @@ def creer_demande(form_data, fichier):
 
     token = token_service.generer_token()
     demande_id = demande.create(
-        token, nom, email, telephone, motif, message, nom_fichier, creneau_id
+        token, nom, email, telephone, motif, message, nom_fichier, nom_fichier_original, creneau_id
     )
     return {"id": demande_id, "token": token}, None
 

@@ -1,12 +1,12 @@
 from app.database.connection import get_db
 
-def create(token, nom, email, telephone, motif, message, fichier_path, creneau_id):
+def create(token, nom, email, telephone, motif, message, fichier_path, nom_fichier_original, creneau_id):
     db = get_db()
     cursor = db.execute(
         """INSERT INTO demandes
-           (token, nom, email, telephone, motif, message, fichier_path, creneau_id, statut)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'En attente de traitement')""",
-        (token, nom, email, telephone, motif, message, fichier_path, creneau_id),
+           (token, nom, email, telephone, motif, message, fichier_path, nom_fichier_original, creneau_id, statut)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'En attente de traitement')""",
+        (token, nom, email, telephone, motif, message, fichier_path, nom_fichier_original, creneau_id),
     )
     db.commit()
     return cursor.lastrowid

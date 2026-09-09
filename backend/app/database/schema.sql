@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS demandes (
     motif TEXT NOT NULL,
     message TEXT,
     fichier_path TEXT NOT NULL,
+    nom_fichier_original TEXT,
     creneau_id INTEGER NOT NULL,
     statut TEXT NOT NULL DEFAULT 'Soumise',
     commentaire_admin TEXT,
